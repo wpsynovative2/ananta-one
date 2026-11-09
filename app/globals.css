@@ -1,26 +1,270 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ---------- Brand theme (from the ANANTA ONE coffee-table brochure) ---------- */
+@theme {
+  /* Copper: brochure headings, the copper "A" and accents */
+  --color-copper-50: #fdf4ee;
+  --color-copper-100: #f9e4d5;
+  --color-copper-200: #f1c6a8;
+  --color-copper-300: #e7a57a;
+  --color-copper-400: #dc8655; /* brochure heading tone */
+  --color-copper-500: #c96d3b;
+  --color-copper-600: #ad572c;
+  --color-copper-700: #8c4525;
+  --color-copper-800: #6d3520;
+  --color-copper-900: #4b2416;
+  /* Maroon: brochure cover tiles */
+  --color-maroon-600: #8f3a2f;
+  --color-maroon-700: #7a2e26; /* primary dark */
+  --color-maroon-800: #5c211b;
+  --color-maroon-900: #3b1511;
+  --color-maroon-950: #230b08;
+  /* Gold: "ONE" in the logo */
+  --color-gold-200: #f6d9a8;
+  --color-gold-300: #efc27b;
+  --color-gold-400: #e3a64c;
+  --color-gold-500: #d9963a;
+  /* Forest: "ANANTA" on light backgrounds */
+  --color-forest: #12302b;
+  /* Neutrals */
+  --color-cream: #fdf6ec;
+  --color-sand: #f6e9d9;
+  --color-ink: #2b1a14;
+
+  --font-display: var(--font-cormorant), "Cambria", Georgia, serif;
+  --font-accent: var(--font-playfair), Georgia, serif;
+  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-float: float 8s ease-in-out infinite;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* Cormorant defaults to old-style figures ("1 BHK" reads like "I BHK"). */
+  font-variant-numeric: lining-nums;
+}
+
+::selection {
+  background: var(--color-gold-300);
+  color: var(--color-maroon-950);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Reusable brand utilities ---------- */
+@utility bg-copper-gradient {
+  background-image: linear-gradient(115deg, #e08d5b 0%, #c96d3b 45%, #a24f28 100%);
+}
+@utility bg-maroon-gradient {
+  background-image: linear-gradient(135deg, #8f3a2f 0%, #5c211b 55%, #230b08 100%);
+}
+@utility text-copper-gradient {
+  background-image: linear-gradient(90deg, #f6d9a8, #e3a64c 50%, #f6d9a8);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+/* Copper hexagon tiles from the brochure cover, under a maroon wash */
+@utility bg-tiles {
+  background-color: #5c211b;
+  background-image: linear-gradient(135deg, rgba(122, 46, 38, 0.82), rgba(35, 11, 8, 0.9)), url("/images/texture-copper-tiles.webp");
+  background-size: cover, 900px auto;
+  background-position: center;
+}
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+/* ---------- Scroll reveal (enabled only once JS is running) ---------- */
+.reveal-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal-ready [data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Hero image slow zoom */
+@keyframes kenburns {
+  from { transform: scale(1.08); }
+  to { transform: scale(1); }
+}
+.animate-kenburns {
+  animation: kenburns 9s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+}
+
+/* ---------- Loader (from loading.txt) ---------- */
+.loader {
+  --main-size: 4em;
+  --text-color: #fdf6ec;
+  --shine-color: #ffffff40;
+  --shadow-color: #c98a6c;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  user-select: none;
+  position: relative;
+  font-size: var(--main-size);
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--text-color);
+  width: 7.3em;
+  height: 1em;
+  filter: drop-shadow(0 0 0.05em var(--shine-color));
+}
+.loader .text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  position: absolute;
+}
+.loader .text:nth-child(1) { clip-path: polygon(0% 0%, 11.11% 0%, 11.11% 100%, 0% 100%); font-size: calc(var(--main-size) / 20); margin-left: -2.1em; opacity: 0.6; }
+.loader .text:nth-child(2) { clip-path: polygon(11.11% 0%, 22.22% 0%, 22.22% 100%, 11.11% 100%); font-size: calc(var(--main-size) / 16); margin-left: -0.98em; opacity: 0.7; }
+.loader .text:nth-child(3) { clip-path: polygon(22.22% 0%, 33.33% 0%, 33.33% 100%, 22.22% 100%); font-size: calc(var(--main-size) / 13); margin-left: -0.33em; opacity: 0.8; }
+.loader .text:nth-child(4) { clip-path: polygon(33.33% 0%, 44.44% 0%, 44.44% 100%, 33.33% 100%); font-size: calc(var(--main-size) / 11); margin-left: -0.05em; opacity: 0.9; }
+.loader .text:nth-child(5) { clip-path: polygon(44.44% 0%, 55.55% 0%, 55.55% 100%, 44.44% 100%); font-size: calc(var(--main-size) / 10); margin-left: 0em; opacity: 1; }
+.loader .text:nth-child(6) { clip-path: polygon(55.55% 0%, 66.66% 0%, 66.66% 100%, 55.55% 100%); font-size: calc(var(--main-size) / 11); margin-left: 0.05em; opacity: 0.9; }
+.loader .text:nth-child(7) { clip-path: polygon(66.66% 0%, 77.77% 0%, 77.77% 100%, 66.66% 100%); font-size: calc(var(--main-size) / 13); margin-left: 0.33em; opacity: 0.8; }
+.loader .text:nth-child(8) { clip-path: polygon(77.77% 0%, 88.88% 0%, 88.88% 100%, 77.77% 100%); font-size: calc(var(--main-size) / 16); margin-left: 0.98em; opacity: 0.7; }
+.loader .text:nth-child(9) { clip-path: polygon(88.88% 0%, 100% 0%, 100% 100%, 88.88% 100%); font-size: calc(var(--main-size) / 20); margin-left: 2.1em; opacity: 0.6; }
+.loader .text span {
+  animation:
+    scrolling 2s cubic-bezier(0.1, 0.6, 0.9, 0.4) infinite,
+    shadow 2s cubic-bezier(0.1, 0.6, 0.9, 0.4) infinite;
+}
+.loader .text:nth-child(-n + 4) span,
+.loader .text:nth-child(n + 6) span {
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.loader .text:nth-child(1) span { background-image: linear-gradient(to right, var(--text-color) 4%, var(--shadow-color) 7%); }
+.loader .text:nth-child(2) span { background-image: linear-gradient(to right, var(--text-color) 9%, var(--shadow-color) 13%); }
+.loader .text:nth-child(3) span { background-image: linear-gradient(to right, var(--text-color) 15%, var(--shadow-color) 18%); }
+.loader .text:nth-child(4) span { background-image: linear-gradient(to right, var(--text-color) 20%, var(--shadow-color) 23%); }
+.loader .text:nth-child(6) span { background-image: linear-gradient(to right, var(--shadow-color) 29%, var(--text-color) 32%); }
+.loader .text:nth-child(7) span { background-image: linear-gradient(to right, var(--shadow-color) 34%, var(--text-color) 37%); }
+.loader .text:nth-child(8) span { background-image: linear-gradient(to right, var(--shadow-color) 39%, var(--text-color) 42%); }
+.loader .text:nth-child(9) span { background-image: linear-gradient(to right, var(--shadow-color) 45%, var(--text-color) 48%); }
+.loader .line {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  height: 0.05em;
+  width: calc(var(--main-size) / 2);
+  margin-top: 0.9em;
+  border-radius: 0.05em;
+}
+.loader .line::before {
+  content: "";
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: var(--text-color);
+  opacity: 0.3;
+}
+.loader .line::after {
+  content: "";
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: var(--color-gold-400);
+  border-radius: 0.05em;
+  transform: translateX(-90%);
+  animation: wobble 2s cubic-bezier(0.5, 0.8, 0.5, 0.2) infinite;
+}
+@keyframes wobble {
+  0% { transform: translateX(-90%); }
+  50% { transform: translateX(90%); }
+  100% { transform: translateX(-90%); }
+}
+@keyframes scrolling {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+@keyframes shadow {
+  0% { background-position: -98% 0; }
+  100% { background-position: 102% 0; }
+}
+
+/* Preloader fade-out */
+.preloader {
+  transition: opacity 0.7s ease, visibility 0.7s ease;
+}
+.preloader.is-done {
+  opacity: 0;
+  visibility: hidden;
+}
+@keyframes preloader-auto {
+  to { opacity: 0; visibility: hidden; }
+}
+
+/* Native dialog backdrop */
+dialog::backdrop {
+  background: rgba(35, 11, 8, 0.75);
+  backdrop-filter: blur(6px);
+}
+dialog[open] > * {
+  animation: dialog-in 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Hide scrollbars on horizontal galleries */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* reCAPTCHA badge: kept visible (required when Google's links aren't shown), lifted above the
+   mobile action bar and, on larger screens, above the floating WhatsApp button. */
+.grecaptcha-badge {
+  bottom: calc(72px + env(safe-area-inset-bottom)) !important;
+  z-index: 30;
+}
+@media (min-width: 768px) {
+  .grecaptcha-badge {
+    bottom: 96px !important;
+  }
 }
